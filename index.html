@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alif Lubricants & Spare Parts ERP Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col md:flex-row font-sans overflow-hidden">
+
+  <aside class="w-full md:w-64 bg-slate-900 border-b md:border-r border-slate-800 p-4 flex flex-col justify-between shrink-0">
+    <div>
+      <div class="flex items-center justify-between">
+        <h1 class="text-md font-black tracking-widest text-emerald-400">ALIF ENGINE AUTOMATION</h1>
+        <button id="logout-trigger" onclick="handleSystemLogout()" class="text-xs text-rose-400 font-bold bg-slate-950 border border-slate-800 rounded px-2 py-1 md:hidden">Logout</button>
+      </div>
+      <nav class="mt-6 space-y-1 text-xs">
+        <button id="nav-dash" onclick="switchContext('dash')" class="w-full text-left px-4 py-3 rounded-xl bg-emerald-600 text-white font-black shadow-md transition-all">📈 DASHBOARD STATS</button>
+        <button id="nav-prod" onclick="switchContext('products')" class="w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">📦 INVENTORY STOCK</button>
+        <button id="nav-pos" onclick="switchContext('pos')" class="w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">🛒 POINT OF SALE (POS)</button>
+        <button id="nav-rep" onclick="switchContext('reports')" class="w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">📊 PROFIT ANALYTICS</button>
+      </nav>
+    </div>
+    <div class="hidden md:block pt-4 border-t border-slate-800 text-[10px] text-slate-500 font-mono tracking-tighter">
+      Developer Engine Context: Active 2026
+    </div>
+  </aside>
+
+  <main class="flex-1 h-screen relative bg-slate-950">
+    <div id="view-loader" class="absolute inset-0 bg-slate-950 flex items-center justify-center text-xs text-slate-400 z-40 hidden">Updating views...</div>
+    <iframe id="app-viewport-sandbox" src="/views/dash" class="w-full h-full border-none z-10"></iframe>
+  </main>
+
+  <div id="print-matrix-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="bg-white text-black rounded-2xl p-5 w-full max-w-sm shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wide">Output Legal Document Sheet</h3>
+        <button onclick="closeDocumentSheetModal()" class="text-rose-600 font-black text-sm bg-rose-50 border border-rose-200 w-6 h-6 rounded-full flex items-center justify-center hover:bg-rose-100 transition">X</button>
+      </div>
+      
+      <div id="capture-render-bounds" class="bg-white p-1 rounded-xl">
+        <div id="dynamic-invoice-canvas" class="bg-white p-4 border border-gray-400 font-mono text-[11px] text-black leading-relaxed">
+          </div>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+        <button onclick="compileToImageOutput()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs shadow-md shadow-indigo-200 transition">🖼️ SAVE PNG IMAGE</button>
+        <button onclick="compileToPdfDocument()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs shadow-md shadow-emerald-200 transition">📄 GENERATE A4 PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

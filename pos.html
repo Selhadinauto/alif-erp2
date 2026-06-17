@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 p-3 sm:p-5 font-sans overflow-x-hidden">
+
+  <div class="space-y-4 max-w-7xl mx-auto">
+    
+    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+      <div>
+        <h2 class="text-md font-black text-emerald-400 tracking-wider">🛒 EXPEDITED CHECKOUT POS CONSOLE</h2>
+        <p class="text-[10px] text-slate-500">Real-time inventory mapping algorithm interface matrix</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      
+      <div class="lg:col-span-2 space-y-3 relative">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 shadow-xl">
+          <input 
+            type="text" 
+            id="pos-search-input" 
+            oninput="executeLiveStockVerificationLookup()" 
+            autocomplete="off"
+            placeholder="Type search terms or scan product item barcode indexes..." 
+            class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-bold outline-none text-slate-100 focus:border-emerald-500 transition shadow-inner font-mono"
+          >
+        </div>
+
+        <div id="validation-dropdown-box" class="hidden absolute left-0 right-0 top-[68px] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-h-[260px] overflow-y-auto z-50 divide-y divide-slate-800">
+          </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between h-[450px] shadow-2xl">
+        <div>
+          <div class="flex justify-between border-b border-slate-800 pb-2 mb-2 text-xs font-black text-slate-400">
+            <span>MUTABLE SALE CART CONTEXT</span>
+            <span id="cart-counter-node" class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800 font-mono text-emerald-400">0 Items</span>
+          </div>
+          <div id="cart-items-stack-wrapper" class="space-y-2 overflow-y-auto max-h-[220px] pr-1">
+            </div>
+        </div>
+
+        <div class="border-t border-slate-800/80 pt-3 space-y-3 text-xs">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-slate-500 text-[10px] font-bold mb-1">TRANSACTION PROFILE</label>
+              <select id="checkout-profile-type" class="w-full bg-slate-950 border border-slate-800 rounded p-2 font-bold text-slate-200 outline-none">
+                <option value="SALE">CASH SALE INVOICE</option>
+                <option value="PROFORMA">PROFORMA ESTIMATE</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-500 text-[10px] font-bold mb-1">PAYMENT MODAL</label>
+              <select id="checkout-payment-channel" class="w-full bg-slate-950 border border-slate-800 rounded p-2 font-bold text-slate-200 outline-none">
+                <option value="Cash">CASH ACCOUNT</option>
+                <option value="Telebirr">TELEBIRR DIGITAL</option>
+                <option value="CBE Birr">CBE BIRR PORTAL</option>
+                <option value="Credit">CREDIT TERM LOGIC</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center bg-slate-950 border border-slate-800 rounded-lg p-2.5">
+            <span class="text-slate-400 text-[10px] font-bold uppercase">Aggregated Total Due (15% VAT In.):</span>
+            <span id="aggregated-total-node" class="font-mono text-md font-black text-emerald-400">0.00 ETB</span>
+          </div>
+
+          <button onclick="commitActiveCartSaleToPipeline()" class="w-full bg-emerald-600 hover:bg-emerald-500 font-black text-white text-xs p-3 rounded-xl tracking-wider shadow-md transition-all">
+            SUBMIT INVOICE LOGIC RECORD
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/js/pos.js"></script>
+</body>
+</html>
