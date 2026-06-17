@@ -1,35 +1,47 @@
+const db = require('./database');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { dbRun, dbGet } = require('../config/database');
 
-exports.login = async (req, res) => {
+const register = async (req, res) => {
+    const { username, password, role } = req.body;
+    try {
+        if (!username || !password || !role) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        db.run(`INSERT INTO users (username, password, role) VALUES (?, ?, ?)`, 
+        [username, hashedPassword, role], function(err) {
+            if (err) {
+                return res.status(400).json({ message: 'Username already exists' });
+            }
+            res.status(201).json({ message: 'User registered successfully', userId: this.lastID });
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const login = async (req, res) => {
     const { username, password } = req.body;
     try {
-        const user = await dbGet("SELECT * FROM users WHERE username = ?", [username]);
-        if (!user) return res.status(404).json({ success: false, error: 'User directory identity mismatch.' });
-
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) return res.status(401).json({ success: false, error: 'Invalid authentication credentials provided.' });
-
-        const token = jwt.sign(
-            { id: user.id, username: user.username, role: user.role },
-            process.env.JWT_SECRET || 'ALIF_SUPER_SECRET_TOKEN_2026',
-            { expiresIn: '12h' }
-        );
-
-        await dbRun("INSERT INTO audit_trail (user_id, action, details) VALUES (?, ?, ?)", [user.id, 'LOGIN', `User session explicitly initiated for role: ${user.role}`]);
-
-        res.json({ success: true, token, user: { id: user.id, username: user.username, role: user.role } });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        db.get(`SELECT * FROM users WHERE username = ?`, [username], async (err, user) => {
+            if (err || !user) {
+                return res.status(400).json({ message: 'Invalid username or password' });
+            }
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                return res.status(400).json({ message: 'Invalid username or password' });
+            }
+            const token = jwt.sign(
+                { id: user.id, role: user.role }, 
+                process.env.JWT_SECRET || 'alif_secret_key', 
+                { expiresIn: '12h' }
+            );
+            res.json({ token, role: user.role, username: user.username });
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
-exports.logout = async (req, res) => {
-    try {
-        await dbRun("INSERT INTO audit_trail (user_id, action, details) VALUES (?, ?, ?)", [req.user.id, 'LOGOUT', `User session gracefully terminated.`]);
-        res.json({ success: true, message: "Logged out context cleared successfully." });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-};
+module.exports = { register, login };
