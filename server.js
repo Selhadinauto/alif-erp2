@@ -2,52 +2,41 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-const fs = require('fs');
-const { initializeSchema } = require('./models/schema');
-require('dotenv').config();
+const { initializeSchema } = require('./schema'); // ወደ መጫኛህ ቦታ ተስተካከለ
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-// Universal Data Mapping Standard Middleware Configuration
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Explicit Route Mapping Configurations
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/products', require('./routes/productRoutes'));
-app.use('/api/sales', require('./routes/salesRoutes'));
-app.use('/api/reports', require('./routes/reportRoutes'));
+// የኤችቲኤምኤል ፋይሎችህን ቀጥታ እንዲያነብ
+app.use(express.static(__dirname));
 
-// Database File Export and JSON State Backup Routines System Endpoint
-app.post('/api/backup/export', async (req, res) => {
-    try {
-        const sourcePath = path.resolve(__dirname, process.env.DB_PATH || 'alif_erp_prod.db');
-        const backupFileName = `backup-alif-erp-${Date.now()}.db`;
-        const destPath = path.join(__dirname, 'backups', backupFileName);
-        
-        if (!fs.existsSync(path.join(__dirname, 'backups'))){
-            fs.mkdirSync(path.join(__dirname, 'backups'));
-        }
+// Routes (የመንገዶች ጥሪ)
+const authRoutes = require('./authRoutes');
+const productRoutes = require('./productRoutes');
+const salesRoutes = require('./salesRoutes');
+const reportRoutes = require('./reportRoutes');
 
-        fs.copyFileSync(sourcePath, destPath);
-        res.json({ success: true, message: `Encapsulated backup record stored safely: ${backupFileName}` });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/sales', salesRoutes);
+app.use('/api/reports', reportRoutes);
+
+// ዋና ገጽ መክፈቻ
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
 });
 
-// Fallback Route to serve SPA context frame wrapper shells
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'views', 'index.html'));
-});
-
-// Structural Schema Initialization Sequence Execution Matrix
-initializeSchema().then(() => {
-    app.listen(PORT, () => {
-        console.log(`🚀 System Online. Listening via network interface matrix port: ${PORT}`);
+// ዳታቤዝ አስጀምሮ ሰርቨሩን ማንሳት
+initializeSchema()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`🚀 Alif ERP Server running on port ${PORT}`);
+        });
+    })
+    .catch(err => {
+        console.error('❌ Failed to initialize database schema:', err);
     });
-}).catch(err => {
-    console.error("❌ Process halted due to persistent architectural initialization fault:", err);
-});
